@@ -8,6 +8,7 @@ import com.github.queueserver.mohist.listeners.PlayerListener;
 import com.github.queueserver.mohist.listeners.ServerListener;
 import com.github.queueserver.mohist.vip.VIPManager;
 import com.github.queueserver.mohist.monitor.ServerMonitor;
+import com.github.queueserver.mohist.compatibility.ModCompatibilityHandler;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,7 @@ public class QueueMohistPlugin extends JavaPlugin {
     private SimpleQueueManager queueManager;
     private VIPManager vipManager;
     private ServerMonitor serverMonitor;
+    private ModCompatibilityHandler modCompatibilityHandler;
     private volatile boolean serverReady = false;
     private volatile boolean pluginFullyLoaded = false;
     
@@ -142,6 +144,10 @@ public class QueueMohistPlugin extends JavaPlugin {
         // 初始化配置管理器
         configManager = new ConfigManager(new File(getDataFolder(), "config.yml"), getLogger());
         
+        // 初始化模组兼容性处理器（优先初始化）
+        modCompatibilityHandler = new ModCompatibilityHandler(this);
+        getLogger().info("模组兼容性处理器已初始化");
+        
         // 初始化数据库管理器
         databaseManager = new SimpleDatabaseManager(this);
         databaseManager.initialize();
@@ -166,6 +172,12 @@ public class QueueMohistPlugin extends JavaPlugin {
         
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
+        
+        // 注册模组兼容性处理器
+        if (modCompatibilityHandler != null) {
+            getServer().getPluginManager().registerEvents(modCompatibilityHandler, this);
+            getLogger().info("模组兼容性处理器已注册");
+        }
         
         getLogger().info("事件监听器注册完成");
     }
