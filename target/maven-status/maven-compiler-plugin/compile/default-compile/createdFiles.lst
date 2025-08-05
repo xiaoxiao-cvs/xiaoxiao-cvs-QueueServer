@@ -7,6 +7,7 @@ com\github\queueserver\mohist\listeners\PlayerListener.class
 com\github\queueserver\mohist\monitor\ServerMonitor$2.class
 com\github\queueserver\mohist\QueueMohistPlugin$4.class
 com\github\queueserver\mohist\vip\VIPManager$VIPInfo.class
+com\github\queueserver\mohist\QueueMohistPlugin$5.class
 com\github\queueserver\mohist\queue\SimpleQueueManager.class
 com\github\queueserver\mohist\vip\VIPManager.class
 com\github\queueserver\mohist\config\ConfigManager.class

@@ -28,6 +28,8 @@ public class QueueMohistPlugin extends JavaPlugin {
     private SimpleQueueManager queueManager;
     private VIPManager vipManager;
     private ServerMonitor serverMonitor;
+    private volatile boolean serverReady = false;
+    private volatile boolean pluginFullyLoaded = false;
     
     @Override
     public void onEnable() {
@@ -55,6 +57,19 @@ public class QueueMohistPlugin extends JavaPlugin {
             
             // 启动定时任务
             startScheduledTasks();
+            
+            // 标记插件完全加载，延迟标记服务器就绪
+            pluginFullyLoaded = true;
+            
+            // 延迟标记服务器就绪，给其他插件和Forge加载时间
+            int startupDelay = configManager.getStartupDelay();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    serverReady = true;
+                    getLogger().info("=== 服务器已准备就绪，可以接受玩家连接 ===");
+                }
+            }.runTaskLater(this, 20L * startupDelay); // 使用配置中的延迟时间
             
             getLogger().info("队列插件已成功启用！");
             getLogger().info("类型：Mohist混合服务器插件");
@@ -398,5 +413,19 @@ public class QueueMohistPlugin extends JavaPlugin {
     
     public ServerMonitor getServerMonitor() {
         return serverMonitor;
+    }
+    
+    /**
+     * 检查服务器是否已就绪
+     */
+    public boolean isServerReady() {
+        return serverReady && pluginFullyLoaded;
+    }
+    
+    /**
+     * 检查插件是否完全加载
+     */
+    public boolean isPluginFullyLoaded() {
+        return pluginFullyLoaded;
     }
 }

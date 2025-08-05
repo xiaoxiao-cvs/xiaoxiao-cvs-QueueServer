@@ -9,11 +9,11 @@ server:
   
   # 目标游戏服务器
   target-server: "survival"
-  target-server-host: "127.0.0.1"
+  target-server-host: "8.138.197.208"
   target-server-port: 25565
   
   # 最大玩家数（队列服务器）
-  max-players: 50
+  max-players: 45
   
   # 独立模式（队列服务器和游戏服务器是同一个）
   standalone-mode: false
@@ -95,6 +95,12 @@ mohist:
   bukkit-permissions: true
   # 是否与Vault权限插件集成
   vault-integration: true
+  # 服务器启动完成延迟时间（秒）
+  startup-delay: 10
+  # 是否启用客户端连接日志
+  client-connection-logging: true
+  # 是否启用客户端类型检测
+  client-type-detection: true
 
 # 非正版支持
 offline-mode:

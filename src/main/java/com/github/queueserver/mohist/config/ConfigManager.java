@@ -93,6 +93,25 @@ public class ConfigManager {
             config.set("whitelist.enabled", false);
             config.set("whitelist.message", "§c您不在服务器白名单中！");
             
+            // 客户端兼容性设置
+            config.set("client-compatibility.allow-vanilla-clients", true);
+            config.set("client-compatibility.allow-forge-clients", true);
+            config.set("client-compatibility.detect-client-type", true);
+            config.set("client-compatibility.force-client-type", "none");
+            config.set("client-compatibility.type-mismatch-action", "warn");
+            
+            // Mohist 特定设置
+            config.set("mohist.forge-compatibility", true);
+            config.set("mohist.bukkit-permissions", true);
+            config.set("mohist.vault-integration", true);
+            
+            // 消息设置
+            config.set("messages.client-type-detected", "&a检测到客户端类型: &e{type}");
+            config.set("messages.client-incompatible", "&c警告: 你的客户端可能与目标服务器不兼容");
+            
+            // 日志设置
+            config.set("logging.log-client-connections", true);
+            
             // 数据库设置
             config.set("database.type", "sqlite");
             config.set("database.sqlite.file", "queue_data.db");
@@ -212,6 +231,73 @@ public class ConfigManager {
     
     public String getSqliteFile() {
         return config.getString("database.sqlite.file", "queue_data.db");
+    }
+    
+    // 客户端兼容性配置方法
+    public boolean isVanillaClientsAllowed() {
+        return config.getBoolean("client-compatibility.allow-vanilla-clients", true);
+    }
+    
+    public boolean isForgeClientsAllowed() {
+        return config.getBoolean("client-compatibility.allow-forge-clients", true);
+    }
+    
+    public boolean isClientTypeDetectionEnabled() {
+        return config.getBoolean("client-compatibility.detect-client-type", true);
+    }
+    
+    public String getForcedClientType() {
+        return config.getString("client-compatibility.force-client-type", "none");
+    }
+    
+    public String getTypeMismatchAction() {
+        return config.getString("client-compatibility.type-mismatch-action", "warn");
+    }
+    
+    public String getClientTypeDetectedMessage() {
+        return config.getString("messages.client-type-detected", "&a检测到客户端类型: &e{type}");
+    }
+    
+    public String getClientIncompatibleMessage() {
+        return config.getString("messages.client-incompatible", "&c警告: 你的客户端可能与目标服务器不兼容");
+    }
+    
+    public boolean isClientConnectionLoggingEnabled() {
+        return config.getBoolean("logging.log-client-connections", true);
+    }
+    
+    // Mohist 特定配置方法
+    public boolean isForgeCompatibilityEnabled() {
+        return config.getBoolean("mohist.forge-compatibility", true);
+    }
+    
+    public boolean isBukkitPermissionsEnabled() {
+        return config.getBoolean("mohist.bukkit-permissions", true);
+    }
+    
+    public boolean isVaultIntegrationEnabled() {
+        return config.getBoolean("mohist.vault-integration", true);
+    }
+    
+    /**
+     * 获取服务器启动延迟时间（秒）
+     */
+    public int getStartupDelay() {
+        return config.getInt("mohist.startup-delay", 10);
+    }
+    
+    /**
+     * 检查是否启用客户端连接日志（Mohist配置）
+     */
+    public boolean isMohistClientConnectionLoggingEnabled() {
+        return config.getBoolean("mohist.client-connection-logging", true);
+    }
+    
+    /**
+     * 检查是否启用客户端类型检测（Mohist配置）
+     */
+    public boolean isMohistClientTypeDetectionEnabled() {
+        return config.getBoolean("mohist.client-type-detection", true);
     }
     
     public FileConfiguration getConfig() {

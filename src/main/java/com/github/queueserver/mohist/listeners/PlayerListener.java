@@ -38,6 +38,17 @@ public class PlayerListener implements Listener {
                 return; // 不是队列服务器，允许正常登录
             }
             
+            // 检查服务器是否已准备就绪
+            if (!plugin.isServerReady()) {
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, 
+                    "§c§l服务器正在启动中...\n§e请稍等片刻后重新连接\n§7预计启动时间: 30-60秒");
+                plugin.getLogger().info("玩家 " + player.getName() + " 在服务器启动期间尝试连接，已拒绝");
+                return;
+            }
+            
+            // 记录客户端类型信息（用于调试）
+            logClientInfo(player);
+            
             // 检查白名单
             if (plugin.getConfigManager().isWhitelistEnabled()) {
                 if (!plugin.getDatabaseManager().isPlayerWhitelisted(playerId)) {
@@ -219,5 +230,114 @@ public class PlayerListener implements Listener {
         // 基于历史数据估算每分钟处理的玩家数量
         int playersPerMinute = 2; // 假设每分钟处理2个玩家
         return (position / playersPerMinute) + 1;
+    }
+    
+    /**
+     * 记录客户端信息（用于调试Forge兼容性问题）
+     */
+    private void logClientInfo(Player player) {
+        try {
+            if (!plugin.getConfigManager().isMohistClientConnectionLoggingEnabled()) {
+                return;
+            }
+            
+            String playerName = player.getName();
+            String address = player.getAddress() != null ? player.getAddress().toString() : "unknown";
+            
+            // 记录基本连接信息
+            plugin.getLogger().info("客户端连接信息:");
+            plugin.getLogger().info("  玩家: " + playerName);
+            plugin.getLogger().info("  地址: " + address);
+            plugin.getLogger().info("  UUID: " + player.getUniqueId());
+            
+            // 尝试检测客户端类型
+            String clientType = detectClientType(player);
+            plugin.getLogger().info("  客户端类型: " + clientType);
+            
+            // 检查客户端兼容性
+            if (plugin.getConfigManager().isMohistClientTypeDetectionEnabled()) {
+                checkClientCompatibility(player, clientType);
+            }
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("记录客户端信息失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 检测客户端类型
+     */
+    private String detectClientType(Player player) {
+        try {
+            // 检查是否有Forge相关的元数据
+            if (player.hasMetadata("forge:handshake")) {
+                return "Forge";
+            } else if (player.hasMetadata("modloader")) {
+                return "Modded";
+            } else {
+                // 通过其他方式检测
+                // 注意：在代理环境下这些检测可能不准确
+                return "Vanilla/Unknown";
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("客户端类型检测失败: " + e.getMessage());
+            return "Unknown";
+        }
+    }
+    
+    /**
+     * 检查客户端兼容性
+     */
+    private void checkClientCompatibility(Player player, String clientType) {
+        try {
+            boolean isVanilla = clientType.contains("Vanilla");
+            boolean isForge = clientType.contains("Forge");
+            
+            // 检查是否允许该类型的客户端
+            if (isVanilla && !plugin.getConfigManager().isVanillaClientsAllowed()) {
+                handleIncompatibleClient(player, "原版客户端不被允许");
+                return;
+            }
+            
+            if (isForge && !plugin.getConfigManager().isForgeClientsAllowed()) {
+                handleIncompatibleClient(player, "Forge客户端不被允许");
+                return;
+            }
+            
+            // 发送客户端类型检测消息
+            String message = plugin.getConfigManager().getClientTypeDetectedMessage()
+                .replace("{type}", clientType);
+            player.sendMessage(message.replace("&", "§"));
+            
+            // 检查目标服务器兼容性
+            if (isVanilla && plugin.getConfigManager().getTargetServer().contains("forge")) {
+                String warningMessage = plugin.getConfigManager().getClientIncompatibleMessage();
+                player.sendMessage(warningMessage.replace("&", "§"));
+            }
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("客户端兼容性检查失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 处理不兼容的客户端
+     */
+    private void handleIncompatibleClient(Player player, String reason) {
+        String action = plugin.getConfigManager().getTypeMismatchAction();
+        
+        switch (action.toLowerCase()) {
+            case "kick":
+                player.kickPlayer("§c客户端不兼容: " + reason);
+                break;
+            case "warn":
+                player.sendMessage("§c警告: " + reason);
+                plugin.getLogger().warning("玩家 " + player.getName() + " 客户端不兼容: " + reason);
+                break;
+            case "ignore":
+            default:
+                // 不做任何处理
+                break;
+        }
     }
 }
