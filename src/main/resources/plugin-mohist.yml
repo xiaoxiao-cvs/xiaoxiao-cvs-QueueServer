@@ -1,0 +1,65 @@
+name: MinecraftQueueServer
+version: ${project.version}
+main: com.github.queueserver.mohist.QueueMohistPlugin
+api-version: 1.20
+author: QueueServer Team
+description: ${project.description} - Mohist/Arclight Mixed Server Support
+website: https://github.com/your-repo/minecraft-queue-server
+
+# 专为Mohist/Arclight混合服务器设计
+# 支持Forge Mod + Bukkit Plugin 环境
+# 兼容离线模式服务器
+
+commands:
+  queue:
+    description: 查看队列信息
+    usage: /queue
+    aliases: [q]
+  queueinfo:
+    description: 显示详细队列状态
+    usage: /queueinfo
+    aliases: [qi, qinfo]
+  leave:
+    description: 离开队列
+    usage: /leave
+    aliases: [lq]
+  queueadmin:
+    description: 队列管理命令
+    usage: /queueadmin <subcommand>
+    permission: queue.admin
+    aliases: [qa, qadmin]
+  qstats:
+    description: 查看队列统计
+    usage: /qstats
+    permission: queue.stats
+    aliases: [queuestats]
+  whitelist:
+    description: 白名单管理
+    usage: /whitelist <add|remove|list> [player]
+    permission: queue.whitelist
+    aliases: [wl]
+
+permissions:
+  queue.admin:
+    description: 队列管理员权限
+    default: op
+  queue.stats:
+    description: 查看统计权限
+    default: op
+  queue.whitelist:
+    description: 白名单管理权限
+    default: op
+  queue.vip:
+    description: VIP优先权限
+    default: false
+  queue.bypass:
+    description: 绕过队列权限
+    default: op
+
+# Mohist/Arclight 兼容性设置
+depend: []
+softdepend: []
+loadbefore: []
+
+# 插件加载顺序：STARTUP, POSTWORLD
+load: POSTWORLD

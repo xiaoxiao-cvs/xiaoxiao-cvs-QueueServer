@@ -356,6 +356,12 @@ public class PlayerListener implements Listener {
     private boolean validateProxyForwarding(Player player, PlayerLoginEvent event) {
         try {
             // 检查是否从代理服务器连接
+            if (player.getAddress() == null) {
+                // 在某些代理模式下（如 Velocity none 模式），地址可能为 null
+                plugin.getLogger().info("玩家 " + player.getName() + " 通过代理连接（地址信息不可用）");
+                return true;
+            }
+            
             String playerAddress = player.getAddress().getAddress().getHostAddress();
             
             // 如果是本地连接但不是直接连接到队列服务器，可能是代理转发问题

@@ -3,13 +3,11 @@ version: 1.0.0-SNAPSHOT
 main: com.github.queueserver.mohist.QueueMohistPlugin
 api-version: 1.20
 author: QueueServer Team
-description: Mohist hybrid server plugin for queue management - Mohist Hybrid Server Support
+description: Universal Spigot/Paper server plugin for queue management - Mohist/Arclight Mixed Server Support
 website: https://github.com/your-repo/minecraft-queue-server
 
-# Mohist specific configuration
-mohist:
-  forge-compatible: true
-  plugin-hybrid: true
+# Supported server types: Spigot, Paper, Purpur, etc.
+# Compatible with both premium and non-premium (offline mode) servers
 
 commands:
   queue:
@@ -43,13 +41,13 @@ commands:
 permissions:
   queue.admin:
     description: 队列管理员权限
-    default: op
+    default: "op"
   queue.stats:
     description: 查看统计权限
-    default: op
+    default: "op"
   queue.whitelist:
     description: 白名单管理权限
-    default: op
+    default: "op"
   queue.vip.vip:
     description: VIP权限
     default: false
