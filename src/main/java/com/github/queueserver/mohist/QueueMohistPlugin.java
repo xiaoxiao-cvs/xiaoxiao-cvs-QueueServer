@@ -9,6 +9,7 @@ import com.github.queueserver.mohist.listeners.ServerListener;
 import com.github.queueserver.mohist.vip.VIPManager;
 import com.github.queueserver.mohist.monitor.ServerMonitor;
 import com.github.queueserver.mohist.compatibility.ModCompatibilityHandler;
+import com.github.queueserver.mohist.velocity.VelocityApiManager;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +31,7 @@ public class QueueMohistPlugin extends JavaPlugin {
     private VIPManager vipManager;
     private ServerMonitor serverMonitor;
     private ModCompatibilityHandler modCompatibilityHandler;
+    private VelocityApiManager velocityApiManager;
     private volatile boolean serverReady = false;
     private volatile boolean pluginFullyLoaded = false;
     
@@ -160,6 +162,15 @@ public class QueueMohistPlugin extends JavaPlugin {
         
         // 初始化服务器监控器
         serverMonitor = new ServerMonitor(this);
+        
+        // 初始化Velocity API管理器（如果启用）
+        if (configManager.isVelocityApiEnabled()) {
+            velocityApiManager = new VelocityApiManager(this);
+            velocityApiManager.startConnectionMonitoring();
+            getLogger().info("Velocity API管理器已初始化");
+        } else {
+            getLogger().info("Velocity API管理器已禁用");
+        }
         
         getLogger().info("所有组件初始化完成");
     }
@@ -358,16 +369,38 @@ public class QueueMohistPlugin extends JavaPlugin {
      */
     private void handleProxyModeTransfer(Player player) {
         String targetServer = configManager.getTargetServer();
-        String targetHost = configManager.getTargetServerHost();
-        int targetPort = configManager.getTargetServerPort();
         
         player.sendMessage("§a正在传送到游戏服务器...");
         
-        // 发送BungeeCord/Velocity传送消息
+        // 如果启用了Velocity API管理器，优先使用它
+        if (velocityApiManager != null) {
+            velocityApiManager.transferPlayer(player, targetServer).thenAccept(success -> {
+                if (success) {
+                    getLogger().info("玩家 " + player.getName() + " 已通过Velocity API传送到服务器: " + targetServer);
+                } else {
+                    getLogger().warning("Velocity API传送失败，尝试备用方案");
+                    // 尝试传统的BungeeCord传送
+                    if (!sendBungeeCordTransfer(player, targetServer)) {
+                        // 如果都失败了，使用踢出方式
+                        if (configManager.isVelocityFallbackToKickEnabled()) {
+                            velocityApiManager.transferPlayerWithKick(player, targetServer);
+                        } else {
+                            player.sendMessage("§c传送失败，请重试或联系管理员");
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+        // 发送BungeeCord/Velocity传送消息（备用方案）
         if (sendBungeeCordTransfer(player, targetServer)) {
             getLogger().info("玩家 " + player.getName() + " 已通过BungeeCord传送到游戏服务器");
         } else {
             // 如果BungeeCord传送失败，使用踢出方式
+            String targetHost = configManager.getTargetServerHost();
+            int targetPort = configManager.getTargetServerPort();
+            
             String kickMessage = String.format(
                 "§a§l传送到游戏服务器\n\n" +
                 "§e请连接到: §f%s:%d\n\n" +
@@ -425,6 +458,14 @@ public class QueueMohistPlugin extends JavaPlugin {
     
     public ServerMonitor getServerMonitor() {
         return serverMonitor;
+    }
+    
+    public VelocityApiManager getVelocityApiManager() {
+        return velocityApiManager;
+    }
+    
+    public ModCompatibilityHandler getModCompatibilityHandler() {
+        return modCompatibilityHandler;
     }
     
     /**

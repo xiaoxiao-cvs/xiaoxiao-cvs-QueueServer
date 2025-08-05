@@ -62,6 +62,10 @@ public class ConfigManager {
             config.set("server.target-server-host", "127.0.0.1");
             config.set("server.target-server-port", 25565);
             config.set("server.max-players", 50);
+            config.set("server.standalone-mode", false);
+            config.set("server.proxy-mode", true);
+            config.set("server.proxy-type", "velocity");
+            config.set("server.ip-forwarding", true);
             
             // 队列设置
             config.set("queue.enabled", true);
@@ -99,6 +103,22 @@ public class ConfigManager {
             config.set("client-compatibility.detect-client-type", true);
             config.set("client-compatibility.force-client-type", "none");
             config.set("client-compatibility.type-mismatch-action", "warn");
+            
+            // Velocity API设置
+            config.set("velocity-api.enabled", true);
+            config.set("velocity-api.host", "127.0.0.1");
+            config.set("velocity-api.port", 8080);
+            config.set("velocity-api.secret", "your-api-secret-here");
+            config.set("velocity-api.use-web-api", true);
+            config.set("velocity-api.fallback-to-kick", true);
+            config.set("velocity-api.connection-timeout", 5000);
+            config.set("velocity-api.read-timeout", 10000);
+            
+            // 服务器映射设置
+            config.set("servers.survival.host", "8.138.197.208");
+            config.set("servers.survival.port", 25565);
+            config.set("servers.creative.host", "8.138.197.208");
+            config.set("servers.creative.port", 25566);
             
             // Mohist 特定设置
             config.set("mohist.forge-compatibility", true);
@@ -163,6 +183,18 @@ public class ConfigManager {
     
     public boolean isStandaloneMode() {
         return config.getBoolean("server.standalone-mode", false);
+    }
+    
+    public boolean isProxyMode() {
+        return config.getBoolean("server.proxy-mode", true);
+    }
+    
+    public String getProxyType() {
+        return config.getString("server.proxy-type", "velocity");
+    }
+    
+    public boolean isIpForwardingEnabled() {
+        return config.getBoolean("server.ip-forwarding", true);
     }
     
     public boolean isVipEnabled() {
@@ -300,6 +332,48 @@ public class ConfigManager {
         return config.getBoolean("mohist.client-type-detection", true);
     }
     
+    // Velocity API 配置方法
+    public boolean isVelocityApiEnabled() {
+        return config.getBoolean("velocity-api.enabled", true);
+    }
+    
+    public String getVelocityApiHost() {
+        return config.getString("velocity-api.host", "127.0.0.1");
+    }
+    
+    public int getVelocityApiPort() {
+        return config.getInt("velocity-api.port", 8080);
+    }
+    
+    public String getVelocityApiSecret() {
+        return config.getString("velocity-api.secret", "your-api-secret-here");
+    }
+    
+    public boolean isVelocityWebApiEnabled() {
+        return config.getBoolean("velocity-api.use-web-api", true);
+    }
+    
+    public boolean isVelocityFallbackToKickEnabled() {
+        return config.getBoolean("velocity-api.fallback-to-kick", true);
+    }
+    
+    public int getVelocityConnectionTimeout() {
+        return config.getInt("velocity-api.connection-timeout", 5000);
+    }
+    
+    public int getVelocityReadTimeout() {
+        return config.getInt("velocity-api.read-timeout", 10000);
+    }
+    
+    // 服务器映射配置方法
+    public String getServerHost(String serverName) {
+        return config.getString("servers." + serverName + ".host");
+    }
+    
+    public int getServerPort(String serverName) {
+        return config.getInt("servers." + serverName + ".port", 25565);
+    }
+
     public FileConfiguration getConfig() {
         return config;
     }

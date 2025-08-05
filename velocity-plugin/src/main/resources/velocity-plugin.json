@@ -1,0 +1,12 @@
+{
+  "id": "queue-velocity-plugin",
+  "name": "Queue Velocity Plugin",
+  "version": "1.0.0",
+  "description": "处理队列服务器的玩家传送请求",
+  "url": "https://github.com/xiaoxiao-cvs/QueueServer",
+  "authors": [
+    "QueueServer Team"
+  ],
+  "dependencies": [],
+  "main": "com.github.queueserver.velocity.QueueVelocityPlugin"
+}

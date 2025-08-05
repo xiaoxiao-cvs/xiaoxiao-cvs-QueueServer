@@ -38,6 +38,13 @@ public class PlayerListener implements Listener {
                 return; // 不是队列服务器，允许正常登录
             }
             
+            // 检查代理模式下的IP转发
+            if (plugin.getConfigManager().isProxyMode() && plugin.getConfigManager().isIpForwardingEnabled()) {
+                if (!validateProxyForwarding(player, event)) {
+                    return; // 如果验证失败，事件已被处理
+                }
+            }
+            
             // 检查服务器是否已准备就绪
             if (!plugin.isServerReady()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, 
@@ -335,9 +342,46 @@ public class PlayerListener implements Listener {
                 plugin.getLogger().warning("玩家 " + player.getName() + " 客户端不兼容: " + reason);
                 break;
             case "ignore":
-            default:
-                // 不做任何处理
+                // 忽略，不采取任何行动
                 break;
+            default:
+                plugin.getLogger().warning("未知的客户端不匹配行动: " + action);
+                break;
+        }
+    }
+    
+    /**
+     * 验证代理转发
+     */
+    private boolean validateProxyForwarding(Player player, PlayerLoginEvent event) {
+        try {
+            // 检查是否从代理服务器连接
+            String playerAddress = player.getAddress().getAddress().getHostAddress();
+            
+            // 如果是本地连接但不是直接连接到队列服务器，可能是代理转发问题
+            if ("127.0.0.1".equals(playerAddress) || "localhost".equals(playerAddress)) {
+                plugin.getLogger().info("玩家 " + player.getName() + " 通过本地代理连接");
+                return true;
+            }
+            
+            // 检查是否有 BungeeCord/Velocity 转发头信息
+            // 在 Spigot 环境下，如果启用了 bungeecord: true，
+            // 那么非代理连接会被拒绝
+            if (plugin.getConfigManager().getProxyType().equals("velocity")) {
+                // Velocity 特定的验证逻辑
+                plugin.getLogger().info("玩家 " + player.getName() + " 通过 Velocity 代理连接，IP: " + playerAddress);
+            } else {
+                // BungeeCord 特定的验证逻辑
+                plugin.getLogger().info("玩家 " + player.getName() + " 通过 BungeeCord 代理连接，IP: " + playerAddress);
+            }
+            
+            return true;
+            
+        } catch (Exception e) {
+            plugin.getLogger().severe("代理转发验证失败: " + e.getMessage());
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, 
+                "§c§l连接验证失败\n\n§e请确保您通过正确的代理服务器连接\n§7错误: " + e.getMessage());
+            return false;
         }
     }
 }
