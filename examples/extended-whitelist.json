@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Suikachi",
+    "uuid": "956b0c21-7cdd-32d0-bd47-fb97bde4dc6a",
+    "addedByName": "Suikachi",
+    "addedByUUID": "956b0c21-7cdd-32d0-bd47-fb97bde4dc6a",
+    "addedAt": "2025-07-23T12:33:55.158273400Z",
+    "source": "PLAYER"
+  },
+  {
+    "name": "AdminPlayer",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "addedByName": "Console",
+    "addedByUUID": "00000000-0000-0000-0000-000000000000",
+    "addedAt": "2025-08-01T08:00:00.000Z",
+    "source": "CONSOLE"
+  },
+  {
+    "name": "VIPPlayer",
+    "uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "addedByName": "Suikachi",
+    "addedByUUID": "956b0c21-7cdd-32d0-bd47-fb97bde4dc6a",
+    "addedAt": "2025-08-02T15:30:22.500Z",
+    "source": "COMMAND"
+  },
+  {
+    "name": "TestPlayer",
+    "uuid": "987fcdeb-51d3-46e8-9c12-123456789abc",
+    "addedByName": "AutoSystem",
+    "addedByUUID": "00000000-0000-0000-0000-000000000001",
+    "addedAt": "2025-08-03T12:15:45.750Z",
+    "source": "API"
+  }
+]

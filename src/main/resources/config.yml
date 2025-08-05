@@ -1,0 +1,199 @@
+# Minecraft Queue Server - Mohist Configuration
+# 配置文件版本: 1.0.0
+# 专为Mohist混合服务器设计
+
+# 服务器设置
+server:
+  # 队列服务器模式
+  queue-server: true
+  
+  # 目标游戏服务器
+  target-server: "survival"
+  target-server-host: "127.0.0.1"
+  target-server-port: 25565
+  
+  # 最大玩家数（队列服务器）
+  max-players: 50
+  
+  # 独立模式（队列服务器和游戏服务器是同一个）
+  standalone-mode: false
+
+# 队列设置
+queue:
+  enabled: true
+  check-interval: 30  # 秒
+  transfer-batch-size: 5
+
+# 服务器监控设置
+monitor:
+  # 是否启用服务器监控
+  enabled: true
+  
+  # 监控检查间隔（秒）
+  check-interval: 30
+  
+  # 状态广播间隔（秒）
+  broadcast-interval: 300  # 5分钟
+  
+  # 连接超时时间（毫秒）
+  connection-timeout: 5000
+  
+  # 是否在服务器状态变化时立即广播
+  broadcast-on-change: true
+  
+  # 广播消息格式
+  messages:
+    # 独立模式广播消息
+    standalone-format: "§6§l[服务器状态] §a当前在线: §e{current}§7/{max} §8| §a队列中: §e{queue}人"
+    # 代理模式广播消息
+    proxy-format: "§6§l[服务器状态] §a{target}服务器在线: §e{current}人 §8| §a队列服务器: §e{queue}人排队"
+    # 服务器离线消息
+    offline-format: "§c§l[服务器状态] §c{target}服务器暂时离线，请稍后再试"
+
+# 白名单设置
+whitelist:
+  # 是否启用白名单功能
+  enabled: true
+  # 白名单文件路径（相对于服务器根目录）
+  file-path: "whitelist.json"
+  # 是否自动重载白名单文件
+  auto-reload: true
+  # 重载间隔时间（秒）
+  reload-interval-seconds: 30
+  # 是否踢出非白名单玩家
+  kick-non-whitelisted: true
+  # 踢出消息（支持颜色代码 &）
+  kick-message: "&c你不在服务器白名单中!"
+  # 扩展白名单文件路径（可选）
+  extended-whitelist-path: "extended-whitelist.json"
+
+# VIP设置
+vip:
+  # 是否启用VIP系统
+  enabled: true
+  # VIP优先级等级（数字越大优先级越高）
+  priority-levels:
+    bronze: 1      # 青铜VIP
+    silver: 2      # 白银VIP
+    gold: 3        # 黄金VIP
+    diamond: 4     # 钻石VIP
+    supreme: 5     # 至尊VIP
+  # VIP插队概率（百分比）
+  skip-percentage: 50
+  # VIP权限节点前缀
+  permission-prefix: "queue.vip."
+
+# Mohist混合服务器特定设置
+mohist:
+  # 是否启用Forge兼容性
+  forge-compatibility: true
+  # 是否检查Mod权限
+  check-mod-permissions: false
+  # Mod权限配置文件
+  mod-permissions-file: "mod-permissions.yml"
+  # 是否启用Bukkit插件权限系统
+  bukkit-permissions: true
+  # 是否与Vault权限插件集成
+  vault-integration: true
+
+# 非正版支持
+offline-mode:
+  # 是否启用非正版支持
+  enabled: true
+  # UUID生成方式 (random, name-based)
+  uuid-generation: "name-based"
+  # 是否验证玩家名称
+  name-validation: false
+  # 皮肤API地址（可选）
+  skin-api-url: ""
+
+# 数据库设置
+database:
+  # 数据库类型 (sqlite, mysql)
+  type: "sqlite"
+  
+  # SQLite配置
+  sqlite:
+    file: "plugins/MinecraftQueueServer/queue-data.db"
+  
+  # MySQL配置
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "minecraft_queue"
+    username: "root"
+    password: "password"
+    # 连接池设置
+    pool:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+# Redis缓存设置（可选）
+redis:
+  enabled: false
+  host: "localhost"
+  port: 6379
+  password: ""
+  database: 0
+
+# 反作弊设置
+anti-cheat:
+  # 连接频率限制
+  rate-limiting:
+    enabled: true
+    # 最大尝试次数
+    max-attempts: 3
+    # 时间窗口（秒）
+    window-seconds: 60
+  
+  # 重复连接检测
+  duplicate-connections:
+    enabled: true
+    # 每个IP最大连接数
+    max-connections-per-ip: 2
+
+# 消息设置
+messages:
+  queue-join: "&a你已加入队列! 当前位置: &e{position}&a, 预计等待时间: &e{time}"
+  queue-position: "&a队列位置: &e{position}&a, 预计等待时间: &e{time}"
+  queue-leave: "&c你已离开队列"
+  server-full: "&c服务器已满! 请稍后重试"
+  vip-priority: "&6[VIP] &a由于你的VIP身份，你的队列位置已提升!"
+  whitelist-kick: "&c你不在服务器白名单中!"
+  queue-bypass: "&a你拥有绕过队列的权限，直接进入服务器!"
+
+# 性能设置
+performance:
+  # 是否启用异步处理
+  async-processing: true
+  # 队列处理线程数
+  queue-threads: 2
+  # 数据库连接池大小
+  database-pool-size: 5
+  # 缓存设置
+  cache:
+    # VIP状态缓存时间（分钟）
+    vip-cache-duration: 5
+    # 白名单缓存时间（分钟）
+    whitelist-cache-duration: 10
+
+# 日志设置
+logging:
+  # 启用详细日志
+  verbose-logging: false
+  # 记录队列事件
+  log-queue-events: true
+  # 记录VIP事件
+  log-vip-events: true
+  # 记录白名单事件
+  log-whitelist-events: true
+
+# 服务器关闭设置
+shutdown:
+  # 关闭时保存队列状态
+  save-queue-on-shutdown: true
+  # 关闭警告消息
+  shutdown-warning-message: "&c&l服务器即将关闭，队列将暂停!"
+  # 警告提前时间（秒）
+  warning-time-seconds: 30
