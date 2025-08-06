@@ -1,300 +1,276 @@
-# Minecraft Queue Server - Mohist Edition
+# Queue Forge Plugin v2.0.0
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Java Version](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html)
 [![Minecraft Version](https://img.shields.io/badge/Minecraft-1.20.1-green.svg)](https://www.minecraft.net/)
-[![Server Type](https://img.shields.io/badge/Server-Mohist-red.svg)](https://mohistmc.com/)
+[![Server Type](https://img.shields.io/badge/Server-Forge%2FMohist%2FArclight-red.svg)](https://files.minecraftforge.net/)
 
-一个专为 Minecraft 服务器设计的队列管理系统，特别针对 Mohist 混合服务器（支持 Forge Mod 和 Bukkit 插件）进行了优化。该系统支持服务器负载均衡、VIP 优先队列、以及非正版玩家支持。
+一个为 Minecraft 1.20.1 Forge 环境设计的现代化队列管理插件，使用 HTTP 协议与代理服务器通信。
 
-## 🌟 核心特性
+## 🚀 特性
 
-### 队列管理
-- ✅ **智能队列系统** - 自动管理玩家排队，支持批量传送
-- ✅ **VIP 优先队列** - VIP 玩家享有优先进入权限
-- ✅ **实时监控** - 实时监控目标服务器状态和在线人数
-- ✅ **自动重连** - 服务器离线时自动暂停队列，恢复时继续
+### 核心功能
+- **HTTP 通信**: 使用现代的 HTTP 协议替代传统的 BungeeCord 消息通道
+- **Forge 兼容**: 完全支持 Minecraft 1.20.1 + Forge 47.3.22
+- **混合服务器支持**: 兼容 Mohist、Arclight 等混合服务器
+- **异步处理**: 所有网络操作都是异步执行，不会阻塞主线程
 
-### 服务器兼容性
-- ✅ **Mohist 混合服务器** - 完全兼容 Forge Mod 和 Bukkit 插件环境
-- ✅ **非正版支持** - 支持离线模式服务器和非正版玩家
-- ✅ **多服务器架构** - 支持 BungeeCord/Velocity 代理网络
-- ✅ **独立/代理模式** - 可作为独立服务器或代理网络的一部分运行
+### 队列系统
+- **智能队列**: VIP 优先级队列 + 普通队列
+- **批量传送**: 支持批量传送多个玩家以提高效率
+- **实时状态**: 实时队列位置和等待时间显示
+- **离线清理**: 自动清理离线玩家
 
-### 管理功能
-- ✅ **命令系统** - 完整的管理员和玩家命令集
-- ✅ **配置热重载** - 无需重启即可重新加载配置
-- ✅ **数据持久化** - 支持 SQLite/MySQL 数据库存储
-- ✅ **详细日志** - 完整的操作日志和错误追踪
+### VIP 系统
+- **权限整合**: 支持 LuckPerms、PermissionsEx 等权限插件
+- **缓存优化**: 使用 Caffeine 缓存提高性能
+- **优先级倍数**: 可配置的 VIP 优先级计算
+
+### 安全功能
+- **IP 白名单**: 支持 CIDR 表示法的 IP 过滤
+- **反破解**: 检测并阻止盗版客户端
+- **连接限制**: 防止频繁连接攻击
+- **安全认证**: HTTP Bearer Token 认证
+
+### 数据存储
+- **多数据库支持**: SQLite (默认) 和 MySQL
+- **连接池**: HikariCP 高性能连接池
+- **数据持久化**: 队列历史、VIP 记录、统计信息
 
 ## 📋 系统要求
 
+### 服务器要求
+- **Minecraft**: 1.20.1
+- **Forge**: 47.3.22 或更高版本
 - **Java**: 17 或更高版本
-- **服务器**: Mohist 1.20.1 或兼容版本
-- **内存**: 最低 2GB RAM 推荐
-- **网络**: 稳定的网络连接（用于服务器间通信）
+- **内存**: 最低 2GB RAM
 
-## 🚀 快速开始
+### 支持的服务器类型
+- ✅ **Mohist** (推荐)
+- ✅ **Arclight** 
+- ✅ **Paper** (基础功能)
+- ✅ **Spigot** (基础功能)
+- ⚠️ **Bukkit** (有限支持)
 
-### 1. 下载和安装
+### 依赖插件 (可选)
+- **LuckPerms** - VIP 权限管理
+- **PermissionsEx** - 替代权限系统
+- **Vault** - 经济系统整合
+- **PlaceholderAPI** - 变量支持
 
-从 [Releases](releases/) 页面下载最新版本的插件 JAR 文件：
+## �️ 安装步骤
 
+### 1. 编译插件
 ```bash
-# 下载预编译版本
-wget https://github.com/xiaoxiao-cvs/QueueServer/releases/latest/download/queue-mohist-1.0.0-SNAPSHOT.jar
-```
-
-或者从源码编译：
-
-```bash
-# 克隆仓库
-git clone https://github.com/xiaoxiao-cvs/QueueServer.git
-cd QueueServer
-
-# 编译插件
+cd Server
 mvn clean package
-
-# 插件文件位于 target/queue-mohist-1.0.0-SNAPSHOT.jar
 ```
 
-### 2. 部署插件
+### 2. 安装插件
+将生成的 `queue-forge-plugin-2.0.0-SNAPSHOT.jar` 复制到服务器的 `plugins` 目录。
 
-1. 将编译好的 JAR 文件放入 Mohist 服务器的 `plugins/` 目录
-2. 启动服务器以生成默认配置文件
-3. 根据需要修改配置文件 `plugins/MinecraftQueueServer/config.yml`
-4. 重启服务器或使用 `/queueadmin reload` 重新加载配置
-
-### 3. 基础配置
-
-编辑 `config.yml` 文件：
+### 3. 配置设置
+首次运行后，编辑 `plugins/QueueForgePlugin/config.yml`:
 
 ```yaml
-# 服务器设置
-server:
-  queue-server: true
-  target-server-host: "your-game-server.com"  # 目标游戏服务器地址
-  target-server-port: 25565                   # 目标游戏服务器端口
-  max-players: 45                             # 队列服务器最大容量
-  standalone-mode: false                      # 是否为独立模式
+# HTTP代理服务器配置
+proxy:
+  server-url: "http://your-proxy-server:8080"
+  token: "your-secret-token"
+  heartbeat-interval: 30
 
-# 队列设置
+# 队列配置
 queue:
   enabled: true
-  check-interval: 30      # 检查间隔（秒）
-  transfer-batch-size: 5  # 批量传送数量
-```
+  max-size: 100
+  process-interval: 5
+  transfer-batch-size: 3
 
-## 📖 使用指南
-
-### 玩家命令
-
-| 命令 | 别名 | 描述 | 示例 |
-|------|------|------|------|
-| `/queue` | `/q` | 查看当前队列位置 | `/queue` |
-| `/queueinfo` | `/qi`, `/qinfo` | 显示详细队列状态 | `/queueinfo` |
-| `/leave` | `/lq` | 离开队列 | `/leave` |
-
-### 管理员命令
-
-| 命令 | 权限 | 描述 | 示例 |
-|------|------|------|------|
-| `/queueadmin reload` | `queue.admin` | 重新加载配置 | `/queueadmin reload` |
-| `/queueadmin status` | `queue.admin` | 查看系统状态 | `/queueadmin status` |
-| `/queueadmin kick <player>` | `queue.admin` | 将玩家踢出队列 | `/queueadmin kick Steve` |
-| `/queueadmin priority <player>` | `queue.admin` | 给予玩家优先权 | `/queueadmin priority Steve` |
-
-### 权限节点
-
-- `queue.admin` - 管理员权限（所有管理命令）
-- `queue.vip` - VIP 权限（优先队列）
-- `queue.bypass` - 绕过队列直接进入
-
-## ⚙️ 高级配置
-
-### VIP 系统配置
-
-```yaml
+# VIP配置
 vip:
   enabled: true
-  priority-slots: 10        # VIP 专用位置数量
-  bypass-queue: true        # VIP 是否可以绕过队列
-  priority-multiplier: 2.0  # VIP 优先级倍数
+  permission: "queue.vip"
+  priority-multiplier: 2.0
 ```
 
-### 数据库配置
-
+### 4. 数据库配置 (MySQL 可选)
 ```yaml
 database:
-  type: "sqlite"  # 或 "mysql"
-  # SQLite 配置
-  sqlite:
-    file: "queue_data.db"
-  # MySQL 配置（可选）
-  mysql:
-    host: "localhost"
-    port: 3306
-    database: "queue_server"
-    username: "your_username"
-    password: "your_password"
+  type: "mysql"
+  url: "jdbc:mysql://localhost:3306/queue"
+  username: "queue_user"
+  password: "your_password"
+  max-pool-size: 10
 ```
 
-### 服务器监控配置
+## 🎮 使用说明
 
-```yaml
-monitor:
-  enabled: true
-  check-interval: 30          # 监控检查间隔（秒）
-  broadcast-interval: 300     # 状态广播间隔（秒）
-  connection-timeout: 5000    # 连接超时时间（毫秒）
-  broadcast-on-change: true   # 状态变化时立即广播
+### 玩家命令
+| 命令 | 描述 | 权限 |
+|------|------|------|
+| `/queue` | 加入队列或查看状态 | `queue.use` |
+| `/queueinfo` | 查看队列信息 | `queue.info` |
+| `/leave` | 离开队列 | `queue.leave` |
+
+### 管理员命令
+| 命令 | 描述 | 权限 |
+|------|------|------|
+| `/queueadmin clear` | 清空所有队列 | `queue.admin` |
+| `/queueadmin reload` | 重载配置 | `queue.admin` |
+| `/queueadmin remove <玩家>` | 移除指定玩家 | `queue.admin` |
+| `/queueadmin setvip <玩家> <true/false>` | 设置 VIP 状态 | `queue.admin` |
+| `/qstats` | 查看详细统计 | `queue.stats` |
+| `/qreload` | 重载配置 | `queue.reload` |
+
+### 权限节点
+| 权限 | 描述 | 默认 |
+|------|------|------|
+| `queue.*` | 所有权限 | OP |
+| `queue.use` | 使用队列 | `true` |
+| `queue.vip` | VIP 优先级 | `false` |
+| `queue.admin` | 管理权限 | OP |
+
+## 🔧 HTTP API
+
+### 代理服务器端点
+插件会向代理服务器发送以下 HTTP 请求：
+
+#### 心跳
+```http
+POST /api/heartbeat
+Authorization: Bearer your-secret-token
+Content-Type: application/json
+
+{
+  "serverName": "queue-server",
+  "onlinePlayers": 25,
+  "maxPlayers": 100,
+  "tps": 19.8,
+  "timestamp": 1691234567890
+}
 ```
 
-## 🔧 开发指南
+#### 玩家传送
+```http
+POST /api/player/transfer
+Authorization: Bearer your-secret-token
+Content-Type: application/json
 
-### 项目结构
-
-```
-src/main/java/com/github/queueserver/mohist/
-├── QueueMohistPlugin.java          # 主插件类
-├── commands/                       # 命令处理器
-│   ├── QueueCommands.java         # 玩家命令
-│   └── AdminCommands.java         # 管理员命令
-├── config/                        # 配置管理
-│   └── ConfigManager.java         # 配置文件管理器
-├── database/                      # 数据库层
-│   └── SimpleDatabaseManager.java # 数据库管理器
-├── queue/                         # 队列系统
-│   └── SimpleQueueManager.java   # 队列管理器
-├── vip/                          # VIP 系统
-│   └── VIPManager.java           # VIP 管理器
-├── monitor/                      # 服务器监控
-│   └── ServerMonitor.java        # 服务器状态监控
-├── listeners/                    # 事件监听器
-│   ├── PlayerListener.java       # 玩家事件
-│   └── ServerListener.java       # 服务器事件
-└── compatibility/                # 兼容性处理
-    └── ModCompatibilityHandler.java # Mod 兼容性
+{
+  "playerId": "uuid-here",
+  "playerName": "PlayerName",
+  "sourceServer": "queue-server",
+  "targetServer": "game",
+  "timestamp": 1691234567890
+}
 ```
 
-### 构建项目
-
-```bash
-# 安装依赖并编译
-mvn clean install
-
-# 仅编译打包
-mvn clean package
-
-# 跳过测试编译
-mvn clean package -DskipTests
+#### 服务器状态查询
+```http
+GET /api/server/status
+Authorization: Bearer your-secret-token
 ```
-
-### 调试模式
-
-在 `config.yml` 中启用调试模式：
-
-```yaml
-debug:
-  enabled: true
-  log-level: "DEBUG"
-  verbose-queue: true
-  monitor-details: true
-```
-
-## 🌐 网络架构
-
-### 代理模式部署
-
-```mermaid
-graph TD
-    A[玩家] --> B[Velocity/BungeeCord 代理]
-    B --> C[队列服务器 - Mohist]
-    C --> D[游戏服务器 - Paper/Spigot]
-    C --> E[游戏服务器 - Mohist]
-    C --> F[游戏服务器 - Fabric]
-```
-
-### 独立模式部署
-
-```mermaid
-graph TD
-    A[玩家] --> B[队列服务器 - Mohist]
-    B --> B
-    B -.-> C[外部监控]
-```
-
-## 🔍 故障排除
-
-### 常见问题
-
-**Q: 插件无法连接到目标服务器**
-- 检查目标服务器地址和端口配置
-- 确认目标服务器正在运行且可访问
-- 检查防火墙设置
-
-**Q: VIP 系统不工作**
-- 确认 VIP 权限节点 `queue.vip` 已正确分配
-- 检查 VIP 配置是否启用
-- 验证权限插件配置
-
-**Q: 数据库连接失败**
-- 检查数据库配置信息
-- 确认数据库服务正在运行
-- 验证数据库权限设置
-
-### 日志分析
-
-插件日志位于 `logs/latest.log`，搜索以下关键词：
-
-- `[QueueServer]` - 插件主要日志
-- `[Queue]` - 队列相关操作
-- `[Monitor]` - 服务器监控日志
-- `[VIP]` - VIP 系统日志
-- `ERROR` - 错误信息
 
 ## 📊 性能优化
 
-### 服务器优化建议
+### 内存优化
+- **缓存系统**: 使用 Caffeine 缓存减少数据库查询
+- **对象池**: 重用数据库连接和 HTTP 连接
+- **异步处理**: 避免阻塞主线程
 
-1. **JVM 参数优化**：
-```bash
-java -Xms2G -Xmx4G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions \
-     -XX:MaxGCPauseMillis=100 -XX:+DisableExplicitGC \
-     -jar mohist-server.jar
-```
+### 网络优化
+- **连接复用**: HTTP/1.1 Keep-Alive
+- **压缩传输**: GZIP 压缩 (如果代理服务器支持)
+- **超时控制**: 合理的连接和读取超时
 
-2. **配置优化**：
+### 数据库优化
+- **连接池**: HikariCP 高性能连接池
+- **索引优化**: 数据库表添加适当索引
+- **批量操作**: 减少数据库往返次数
+
+## 🐛 故障排除
+
+### 常见问题
+
+#### 1. 插件无法加载
+**症状**: 插件在启动时被禁用
+**解决方案**:
+- 检查 Java 版本 (需要 17+)
+- 确认服务器支持 Paper API
+- 查看控制台错误日志
+
+#### 2. HTTP 连接失败
+**症状**: 无法连接到代理服务器
+**解决方案**:
+- 检查代理服务器地址和端口
+- 确认认证令牌正确
+- 检查防火墙设置
+
+#### 3. VIP 检测失败
+**症状**: VIP 玩家被当作普通玩家
+**解决方案**:
+- 检查权限插件配置
+- 确认 VIP 权限节点设置
+- 使用 `/queueadmin setvip` 手动设置
+
+#### 4. 数据库连接错误
+**症状**: 数据库相关功能异常
+**解决方案**:
+- 检查数据库配置
+- 确认数据库服务运行正常
+- 查看数据库连接权限
+
+### 调试模式
+启用调试模式以获取更详细的日志:
 ```yaml
-queue:
-  check-interval: 15        # 减少检查间隔提高响应速度
-  transfer-batch-size: 3    # 较小的批次大小减少延迟
-
-monitor:
-  check-interval: 20        # 优化监控频率
-  connection-timeout: 3000  # 减少超时时间
+debug: true
 ```
 
-## 🤝 贡献指南
+### 日志分析
+重要日志文件位置:
+- **插件日志**: `logs/latest.log`
+- **队列数据**: `plugins/QueueForgePlugin/queue.db`
+- **配置文件**: `plugins/QueueForgePlugin/config.yml`
 
-我们欢迎任何形式的贡献！
+## � 更新说明
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+### v2.0.0 的主要变更
+1. **架构重写**: 从 BungeeCord 消息通道改为 HTTP 通信
+2. **Forge 优化**: 专门针对 Forge 环境优化
+3. **性能提升**: 使用现代化的缓存和异步处理
+4. **安全增强**: 新增多层安全验证机制
+5. **功能扩展**: 增加更多管理命令和统计功能
 
-### 代码规范
+### 迁移指南
+从 v1.x 升级到 v2.0.0:
+1. **备份数据**: 备份旧版本的配置和数据
+2. **更新配置**: 使用新的配置格式
+3. **测试功能**: 在测试环境验证所有功能
+4. **更新代理**: 确保代理服务器支持新的 HTTP API
 
-- 使用 Java 17+ 语法特性
-- 遵循 Google Java Style Guide
-- 添加适当的注释和文档
-- 编写单元测试
+## 📞 支持
 
-## 📝 更新日志
+### 获取帮助
+- **GitHub Issues**: [提交问题](https://github.com/xiaoxiao-cvs/QueueServer/issues)
+- **文档**: 查看在线文档
+- **社区**: 加入开发者社区
 
-### v1.0.0-SNAPSHOT (开发中)
+### 贡献代码
+欢迎提交 Pull Request 来改进这个插件:
+1. Fork 这个仓库
+2. 创建功能分支
+3. 提交更改
+4. 发起 Pull Request
+
+### 许可证
+本项目使用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+---
+
+**开发者**: QueueServer Team  
+**版本**: 2.0.0  
+**支持**: Minecraft 1.20.1 + Forge 47.3.22  
+**最后更新**: 2025-08-06
 - ✅ 基础队列管理系统
 - ✅ Mohist 混合服务器支持
 - ✅ VIP 优先队列

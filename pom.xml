@@ -5,24 +5,34 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.queueserver</groupId>
-    <artifactId>queue-spigot</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>queue-forge-plugin</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-        <name>Queue Spigot</name>
-    <description>Universal Spigot/Paper server plugin for queue management</description>
+    <name>Queue Forge Plugin</name>
+    <description>Minecraft 1.20.1 Forge Queue Management Plugin with HTTP Proxy Communication</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper.version>1.20.1-R0.1-SNAPSHOT</paper.version>
+        <forge.version>47.3.22</forge.version>
     </properties>
 
     <repositories>
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>minecraftforge</id>
+            <name>MinecraftForge Repository</name>
+            <url>https://maven.minecraftforge.net/</url>
+        </repository>
+        <repository>
+            <id>mohist-repo</id>
+            <url>https://maven.mohistmc.com/</url>
         </repository>
     </repositories>
 
@@ -33,6 +43,28 @@
             <artifactId>paper-api</artifactId>
             <version>${paper.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- Forge API for mod compatibility -->
+        <dependency>
+            <groupId>net.minecraftforge</groupId>
+            <artifactId>forge</artifactId>
+            <version>1.20.1-${forge.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- HTTP Client for proxy communication -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+        </dependency>
+        
+        <!-- JSON processing -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
         
         <!-- Configuration library -->
@@ -49,11 +81,19 @@
             <version>5.0.1</version>
         </dependency>
         
-        <!-- Redis client -->
+        <!-- Caffeine cache for better performance -->
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>4.4.3</version>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        
+        <!-- Logging framework -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -99,6 +139,7 @@
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -108,12 +149,24 @@
                                     <shadedPattern>com.github.queueserver.libs.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>redis.clients.jedis</pattern>
-                                    <shadedPattern>com.github.queueserver.libs.jedis</shadedPattern>
+                                    <pattern>okhttp3</pattern>
+                                    <shadedPattern>com.github.queueserver.libs.okhttp3</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>okio</pattern>
+                                    <shadedPattern>com.github.queueserver.libs.okio</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>com.github.queueserver.libs.gson</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.spongepowered.configurate</pattern>
                                     <shadedPattern>com.github.queueserver.libs.configurate</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.github.benmanes.caffeine</pattern>
+                                    <shadedPattern>com.github.queueserver.libs.caffeine</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
