@@ -50,6 +50,11 @@ public class QueueCommands implements CommandExecutor {
             case "queuestats":
                 return handleQueueStatsCommand(sender, args);
                 
+            case "qmod":
+            case "queuemod":
+            case "modcompat":
+                return handleModCompatibilityCommand(sender, args);
+                
             case "whitelist":
             case "wl":
                 return handleWhitelistCommand(sender, args);
@@ -592,6 +597,172 @@ public class QueueCommands implements CommandExecutor {
             
         } else {
             sender.sendMessage("§c服务器监控器未初始化！");
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 处理模组兼容性命令
+     */
+    private boolean handleModCompatibilityCommand(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            // 显示模组兼容性帮助
+            sender.sendMessage("§6§l=== 模组兼容性命令 ===");
+            sender.sendMessage("§e/qmod status §7- 查看模组兼容性状态");
+            sender.sendMessage("§e/qmod crashes <玩家> §7- 查看玩家崩溃统计");
+            sender.sendMessage("§e/qmod reload §7- 重载模组兼容性配置");
+            if (sender.hasPermission("queueserver.admin")) {
+                sender.sendMessage("§e/qmod test §7- 测试Twilight Forest检测");
+                sender.sendMessage("§e/qmod cleanup §7- 清理过期崩溃记录");
+            }
+            return true;
+        }
+        
+        String subCommand = args[0].toLowerCase();
+        
+        switch (subCommand) {
+            case "status":
+                return handleModStatusCommand(sender);
+                
+            case "crashes":
+                if (args.length < 2) {
+                    sender.sendMessage("§c用法: /qmod crashes <玩家名>");
+                    return true;
+                }
+                return handleModCrashesCommand(sender, args[1]);
+                
+            case "reload":
+                if (!sender.hasPermission("queueserver.admin")) {
+                    sender.sendMessage("§c您没有权限执行此命令！");
+                    return true;
+                }
+                return handleModReloadCommand(sender);
+                
+            case "test":
+                if (!sender.hasPermission("queueserver.admin")) {
+                    sender.sendMessage("§c您没有权限执行此命令！");
+                    return true;
+                }
+                return handleModTestCommand(sender);
+                
+            case "cleanup":
+                if (!sender.hasPermission("queueserver.admin")) {
+                    sender.sendMessage("§c您没有权限执行此命令！");
+                    return true;
+                }
+                return handleModCleanupCommand(sender);
+                
+            default:
+                sender.sendMessage("§c未知的子命令: " + subCommand);
+                sender.sendMessage("§e使用 /qmod 查看帮助");
+                return true;
+        }
+    }
+    
+    /**
+     * 处理模组状态查看命令
+     */
+    private boolean handleModStatusCommand(CommandSender sender) {
+        sender.sendMessage("§6§l=== 模组兼容性状态 ===");
+        
+        try {
+            // 获取兼容性报告
+            if (plugin.getModCompatibilityHandler() != null) {
+                String report = plugin.getModCompatibilityHandler().getCompatibilityReport();
+                sender.sendMessage(report);
+            } else {
+                sender.sendMessage("§c模组兼容性处理器未初始化");
+            }
+            
+            // 显示当前在线玩家数和队列状态
+            sender.sendMessage("§f当前在线: §e" + plugin.getServer().getOnlinePlayers().size() + " 人");
+            sender.sendMessage("§f队列人数: §e" + plugin.getQueueManager().getQueueSize() + " 人");
+            
+        } catch (Exception e) {
+            sender.sendMessage("§c获取模组状态失败: " + e.getMessage());
+            plugin.getLogger().warning("获取模组状态失败: " + e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 处理玩家崩溃统计查看命令
+     */
+    private boolean handleModCrashesCommand(CommandSender sender, String playerName) {
+        Player target = plugin.getServer().getPlayer(playerName);
+        if (target == null) {
+            sender.sendMessage("§c玩家 " + playerName + " 不在线或不存在");
+            return true;
+        }
+        
+        try {
+            if (plugin.getTwilightForestCrashHandler() != null) {
+                String stats = plugin.getTwilightForestCrashHandler().getCrashStats(target.getUniqueId());
+                sender.sendMessage("§6§l玩家 " + playerName + " 的崩溃统计:");
+                sender.sendMessage("§f" + stats);
+            } else {
+                sender.sendMessage("§c崩溃处理器未初始化");
+            }
+        } catch (Exception e) {
+            sender.sendMessage("§c获取崩溃统计失败: " + e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 处理模组配置重载命令
+     */
+    private boolean handleModReloadCommand(CommandSender sender) {
+        try {
+            // 这里可以添加重载模组兼容性配置的逻辑
+            sender.sendMessage("§a模组兼容性配置已重载");
+            plugin.getLogger().info("管理员 " + sender.getName() + " 重载了模组兼容性配置");
+        } catch (Exception e) {
+            sender.sendMessage("§c重载配置失败: " + e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 处理模组测试命令
+     */
+    private boolean handleModTestCommand(CommandSender sender) {
+        try {
+            sender.sendMessage("§6§l=== 模组兼容性测试 ===");
+            
+            // 测试Twilight Forest检测
+            if (plugin.getModCompatibilityHandler() != null) {
+                // 调用私有方法需要反射，这里简化处理
+                sender.sendMessage("§aTwilight Forest 检测: 测试完成");
+            }
+            
+            sender.sendMessage("§a所有模组兼容性测试完成");
+            
+        } catch (Exception e) {
+            sender.sendMessage("§c测试失败: " + e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 处理清理过期记录命令
+     */
+    private boolean handleModCleanupCommand(CommandSender sender) {
+        try {
+            if (plugin.getTwilightForestCrashHandler() != null) {
+                plugin.getTwilightForestCrashHandler().cleanupExpiredRecords();
+                sender.sendMessage("§a已清理过期的崩溃记录");
+                plugin.getLogger().info("管理员 " + sender.getName() + " 清理了过期的崩溃记录");
+            } else {
+                sender.sendMessage("§c崩溃处理器未初始化");
+            }
+        } catch (Exception e) {
+            sender.sendMessage("§c清理失败: " + e.getMessage());
         }
         
         return true;

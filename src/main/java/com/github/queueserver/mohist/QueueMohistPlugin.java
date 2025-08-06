@@ -9,6 +9,7 @@ import com.github.queueserver.mohist.listeners.ServerListener;
 import com.github.queueserver.mohist.vip.VIPManager;
 import com.github.queueserver.mohist.monitor.ServerMonitor;
 import com.github.queueserver.mohist.compatibility.ModCompatibilityHandler;
+import com.github.queueserver.mohist.compatibility.TwilightForestCrashHandler;
 import com.github.queueserver.mohist.velocity.VelocityApiManager;
 
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public class QueueMohistPlugin extends JavaPlugin {
     private VIPManager vipManager;
     private ServerMonitor serverMonitor;
     private ModCompatibilityHandler modCompatibilityHandler;
+    private TwilightForestCrashHandler twilightForestCrashHandler;
     private VelocityApiManager velocityApiManager;
     private volatile boolean serverReady = false;
     private volatile boolean pluginFullyLoaded = false;
@@ -150,6 +152,10 @@ public class QueueMohistPlugin extends JavaPlugin {
         modCompatibilityHandler = new ModCompatibilityHandler(this);
         getLogger().info("模组兼容性处理器已初始化");
         
+        // 初始化Twilight Forest崩溃处理器
+        twilightForestCrashHandler = new TwilightForestCrashHandler(this);
+        getLogger().info("Twilight Forest崩溃处理器已初始化");
+        
         // 初始化数据库管理器
         databaseManager = new SimpleDatabaseManager(this);
         databaseManager.initialize();
@@ -188,6 +194,12 @@ public class QueueMohistPlugin extends JavaPlugin {
         if (modCompatibilityHandler != null) {
             getServer().getPluginManager().registerEvents(modCompatibilityHandler, this);
             getLogger().info("模组兼容性处理器已注册");
+        }
+        
+        // 注册Twilight Forest崩溃处理器
+        if (twilightForestCrashHandler != null) {
+            getServer().getPluginManager().registerEvents(twilightForestCrashHandler, this);
+            getLogger().info("Twilight Forest崩溃处理器已注册");
         }
         
         getLogger().info("事件监听器注册完成");
@@ -466,6 +478,10 @@ public class QueueMohistPlugin extends JavaPlugin {
     
     public ModCompatibilityHandler getModCompatibilityHandler() {
         return modCompatibilityHandler;
+    }
+    
+    public TwilightForestCrashHandler getTwilightForestCrashHandler() {
+        return twilightForestCrashHandler;
     }
     
     /**

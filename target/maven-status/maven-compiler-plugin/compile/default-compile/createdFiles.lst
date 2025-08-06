@@ -14,6 +14,7 @@ com\github\queueserver\mohist\vip\VIPManager.class
 com\github\queueserver\mohist\config\ConfigManager.class
 com\github\queueserver\mohist\compatibility\ModCompatibilityHandler.class
 com\github\queueserver\mohist\QueueMohistPlugin.class
+com\github\queueserver\mohist\compatibility\TwilightForestCrashHandler.class
 com\github\queueserver\mohist\vip\VIPManager$VIPData.class
 com\github\queueserver\mohist\listeners\PlayerListener$2.class
 com\github\queueserver\mohist\QueueMohistPlugin$2.class
